@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head><meta charset="utf-8"><title>Gallery</title>
+<style>
+body{background:#111;color:#ccc;font-family:monospace;margin:10px}
+h2{color:#0ff;margin:10px 0}
+.grid{display:flex;flex-wrap:wrap}
+.cell{width:300px;margin:4px;text-align:center}
+.cell canvas{width:290px;height:207px;background:#1a1a2a}
+.cell .lb{font-size:15px;color:#fff;padding:4px}
+</style>
+</head>
+<body>
+<h2>BLASTERS (a-r)</h2><div class="grid" id="g1"></div>
+<h2>CITY + ROBOT</h2><div class="grid" id="g2"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/loaders/GLTFLoader.js"></script>
+<script>
+(function(){
+var BASE='https://lucifermornngstar52-cell.github.io/neon-strike-assets/';
+var blasters=[];for(var i=0;i<18;i++)blasters.push('blaster-'+String.fromCharCode(97+i)+'.glb');
+var city=['building-a.glb','building-b.glb','building-c.glb','building-d.glb','building-e.glb','building-f.glb','building-g.glb','building-h.glb','building-i.glb','building-j.glb','building-k.glb','building-l.glb','building-m.glb','building-n.glb','building-skyscraper-a.glb','building-skyscraper-b.glb','building-skyscraper-c.glb','building-skyscraper-d.glb','building-skyscraper-e.glb','detail-awning.glb','detail-awning-wide.glb','detail-overhang.glb','detail-overhang-wide.glb','detail-parasol-a.glb','detail-parasol-b.glb','crate-small.glb','crate-medium.glb','crate-wide.glb','grenade-a.glb','grenade-b.glb','robot.glb'];
+var renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
+renderer.setSize(560,400);
+renderer.setClearColor(0x1a1a2a);
+document.body.appendChild(renderer.domElement);
+renderer.domElement.style.position='fixed';renderer.domElement.style.left='-9999px';
+var scene=new THREE.Scene();
+var camera=new THREE.PerspectiveCamera(40,1.4,0.1,800);
+scene.add(new THREE.HemisphereLight(0xffffff,0x555566,1.2));
+var d=new THREE.DirectionalLight(0xffffff,0.8);d.position.set(3,6,4);scene.add(d);
+var grid=new THREE.GridHelper(12,24,0x334455,0x222233);scene.add(grid);
+var loader=new THREE.GLTFLoader();
+var cells={};
+function makeCells(list,container){
+  for(var i=0;i<list.length;i++){
+    var cell=document.createElement('div');cell.className='cell';
+    var cv=document.createElement('canvas');cv.width=580;cv.height=410;
+    cell.appendChild(cv);
+    var lb=document.createElement('div');lb.className='lb';lb.textContent=list[i].replace('.glb','');
+    cell.appendChild(lb);
+    document.getElementById(container).appendChild(cell);
+    cells[list[i]]=cv.getContext('2d');
+  }
+}
+makeCells(blasters,'g1');makeCells(city,'g2');
+var queue=blasters.concat(city);
+function next(){
+  if(!queue.length){var done=document.createElement('h2');done.textContent='DONE';done.id='done';document.body.appendChild(done);return;}
+  var name=queue.shift();
+  loader.load(BASE+name,function(gltf){
+    scene.add(gltf.scene);
+    var box=new THREE.Box3().setFromObject(gltf.scene);
+    var size=box.getSize(new THREE.Vector3());
+    var center=box.getCenter(new THREE.Vector3());
+    var maxDim=Math.max(size.x,size.y,size.z);
+    var cd=maxDim*1.9;
+    camera.position.set(center.x+cd*0.72,center.y+cd*0.55,center.z+cd*0.72);
+    camera.lookAt(center);
+    renderer.render(scene,camera);
+    var ctx=cells[name];
+    if(ctx)ctx.drawImage(renderer.domElement,10,5);
+    scene.remove(gltf.scene);
+    gltf.scene.traverse(function(o){if(o.geometry)o.geometry.dispose();});
+    setTimeout(next,30);
+  },undefined,function(){next();});
+}
+next();
+})();
+</script>
+</body>
+</html>
