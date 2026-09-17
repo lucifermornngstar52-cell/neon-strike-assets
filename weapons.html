@@ -1,6 +1,7 @@
 <!DOCTYPE html><html><head><meta charset="utf-8"><title>Weapons</title>
 <style>body{margin:0;background:#111;color:#ccc;font-family:monospace;overflow:hidden}h3{position:fixed;top:6px;left:10px;color:#0ff;z-index:9;text-shadow:0 0 4px #000}</style></head>
 <body><h3 id="st">LOADING...</h3>
+<h3 id="dbg" style="color:#fa5">DEBUG WAIT</h3>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/loaders/GLTFLoader.js"></script>
 <script>
@@ -21,6 +22,11 @@ var names=[];
 for(var i=0;i<18;i++)names.push('blaster-'+String.fromCharCode(97+i)+'.glb');
 var total=names.length,okN=0,errN=0,errList='';
 var st=document.getElementById('st');
+var dbg=document.getElementById('dbg');
+fetch(BASE+names[0]).then(function(r){dbg.textContent='FETCH1 status='+r.status;return r.arrayBuffer();}).then(function(b){dbg.textContent+=' bytes='+b.byteLength+' magic='+String.fromCharCode(b[0],b[1],b[2],b[3]);
+  try{loader.parse(b,BASE,function(g){dbg.textContent+=' PARSE_OK meshes=';var c2=0;g.scene.traverse(function(o){if(o.isMesh)c2++;});dbg.textContent+=c2;},function(e){dbg.textContent+=' PARSE_ERR '+(e&&e.message||e);});}catch(e){dbg.textContent+=' PARSE_THROW '+e.message;}
+}).catch(function(e){dbg.textContent='FETCH1 ERR '+e.message;});
+fetch(BASE+'robot.glb').then(function(r){dbg.textContent+=' | ROBOT status='+r.status;return r.arrayBuffer();}).then(function(b){dbg.textContent+=' bytes='+b.byteLength;}).catch(function(e){dbg.textContent+=' | ROBOT ERR '+e.message;});
 function upd(){st.textContent='loading OK='+okN+' ERR='+errN+(errN?' ['+errList+']':'');}
 function finish(){
   if(okN+errN<total)return;
