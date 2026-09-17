@@ -1,0 +1,19 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Pick</title>
+<style>body{background:#111;color:#ccc;font-family:monospace;margin:10px}
+.grid{display:flex;flex-wrap:wrap;align-items:flex-end}
+.cell{width:190px;margin:3px;text-align:center;background:#1a1a28;padding:4px}
+.cell img{width:180px;height:135px;object-fit:contain;background:#000}
+.cell div{font-size:14px;color:#fff;padding:3px}
+h2{color:#0ff}</style></head><body>
+<h2>WEAPONS</h2><div class="grid" id="g1"></div>
+<h2>CITY</h2><div class="grid" id="g2"></div>
+<script>
+function add(base,list,cont){for(var i=0;i<list.length;i++){var c=document.createElement('div');c.className='cell';
+var im=document.createElement('img');im.src=base+list[i];c.appendChild(im);
+var d=document.createElement('div');d.textContent=list[i].replace('.png','');c.appendChild(d);
+document.getElementById(cont).appendChild(c);}}
+var w=[];for(var i=0;i<18;i++)w.push('w-blaster-'+String.fromCharCode(97+i)+'.png');
+w.push('w-crate-small.png','w-crate-medium.png','w-crate-wide.png','w-grenade-a.png','w-grenade-b.png');
+var c=['c-building-a.png','c-building-b.png','c-building-c.png','c-building-d.png','c-building-e.png','c-building-f.png','c-building-g.png','c-building-h.png','c-building-i.png','c-building-j.png','c-building-k.png','c-building-l.png','c-building-m.png','c-building-n.png','c-building-skyscraper-a.png','c-building-skyscraper-b.png','c-building-skyscraper-c.png','c-building-skyscraper-d.png','c-building-skyscraper-e.png','c-detail-awning.png','c-detail-awning-wide.png','c-detail-overhang.png','c-detail-overhang-wide.png','c-detail-parasol-a.png','c-detail-parasol-b.png'];
+add('previews/',w,'g1');add('previews/',c,'g2');
+</script></body></html>
