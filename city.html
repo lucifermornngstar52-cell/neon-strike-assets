@@ -1,0 +1,44 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>City</title>
+<style>body{margin:0;background:#111;color:#ccc;font-family:monospace;overflow:hidden}h3{position:fixed;top:6px;left:10px;color:#0ff;z-index:9;text-shadow:0 0 4px #000}</style></head>
+<body><h3 id="st">LOADING...</h3>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/loaders/GLTFLoader.js"></script>
+<script>
+(function(){
+var BASE='https://lucifermornngstar52-cell.github.io/neon-strike-assets/';
+var renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth,innerHeight);
+renderer.setPixelRatio(1);
+renderer.setClearColor(0x14141f);
+document.body.appendChild(renderer.domElement);
+var scene=new THREE.Scene();
+var camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,0.1,500);
+scene.add(new THREE.HemisphereLight(0xffffff,0x555566,1.2));
+var d=new THREE.DirectionalLight(0xffffff,0.8);d.position.set(5,10,6);scene.add(d);
+var grid=new THREE.GridHelper(80,80,0x334455,0x222233);scene.add(grid);
+var loader=new THREE.GLTFLoader();
+var names=['building-a.glb','building-b.glb','building-c.glb','building-d.glb','building-e.glb','building-f.glb','building-g.glb','building-h.glb','building-i.glb','building-j.glb','building-k.glb','building-l.glb','building-m.glb','building-n.glb','building-skyscraper-a.glb','building-skyscraper-b.glb','building-skyscraper-c.glb','building-skyscraper-d.glb','building-skyscraper-e.glb','detail-awning.glb','detail-awning-wide.glb','detail-overhang.glb','detail-overhang-wide.glb','detail-parasol-a.glb','detail-parasol-b.glb','crate-small.glb','crate-medium.glb','crate-wide.glb','grenade-a.glb','grenade-b.glb','robot.glb'];
+var loaded=0;
+camera.position.set(0,13,30);camera.lookAt(0,2,10);
+function place(gltf,idx){
+  var m=gltf.scene;
+  var box=new THREE.Box3().setFromObject(m);
+  var size=box.getSize(new THREE.Vector3());
+  var md=Math.max(size.x,size.y,size.z)||1;
+  var s=4.5/md;m.scale.set(s,s,s);
+  box=new THREE.Box3().setFromObject(m);
+  var min=box.getMin(new THREE.Vector3());
+  m.position.x-=min.x;m.position.y-=min.y;m.position.z-=min.z;
+  var col=idx%7,row=Math.floor(idx/7);
+  m.position.x+=(col-3)*7-1.75;
+  m.position.z+=row*7;
+  scene.add(m);
+  loaded++;
+  if(loaded===names.length){document.getElementById('st').textContent='DONE 32: 7 cols per row';document.title='DONE';}
+  renderer.render(scene,camera);
+}
+for(var j=0;j<names.length;j++)(function(idx){loader.load(BASE+names[idx],function(g){place(g,idx);},undefined,function(){loaded++;document.getElementById('st').textContent='ERR '+names[idx];});})(j);
+function anim(){requestAnimationFrame(function(){requestAnimationFrame(anim);});renderer.render(scene,camera);}
+anim();
+})();
+</script></body></html>
